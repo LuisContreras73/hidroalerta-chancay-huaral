@@ -1,0 +1,37 @@
+# Configuración de corrección de sesgo para productos grillados
+
+general:
+  calibration_split: train  # Solo ajustar con datos de train
+  reference_variable: senamhi_observed  # Observación como referencia
+  gridded_variable: pisco_raw
+
+methods:
+  delta_change:
+    description: "Corrección por diferencia aditiva o multiplicativa mensual"
+    use_case: "Precipitación y temperatura"
+    additive_variables: [tmax_c, tmin_c, tmean_c]
+    multiplicative_variables: [pr_mm]
+
+  quantile_mapping:
+    description: "Mapeo de cuantiles empírico"
+    use_case: "Precipitación con sesgo de distribución"
+    n_quantiles: 50
+    variables: [pr_mm]
+
+  qdm:
+    description: "Quantile Delta Mapping"
+    use_case: "Escenarios climáticos futuros"
+    note: "Solo para módulo de escenarios, no para operación diaria"
+
+evaluation:
+  metrics: [MAE, RMSE, PBIAS, pearson_r, monthly_bias]
+  figures:
+    - raw_vs_observed
+    - corrected_vs_observed
+    - monthly_bias_before_after
+    - qq_mapping
+
+documentation:
+  save_correction_factors: true
+  save_correction_period: true
+  note: "Factores entrenados en train. No contaminar con val/test."

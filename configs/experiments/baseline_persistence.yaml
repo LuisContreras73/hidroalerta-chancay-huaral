@@ -1,0 +1,33 @@
+experiment:
+  name: baseline_persistence
+  description: "Baseline persistencia: predice el valor del día actual como valor de mañana"
+  objective: "Cota inferior para pronóstico a 1 día. Referencia de memoria corta."
+  dataset_version: D4_pisco_model_ready_precip
+  model: M1_persistence
+  all_targets: [pr_next_1d]
+  split_strategy: temporal_holdout
+  train_ratio: 0.70
+  val_ratio: 0.15
+  test_ratio: 0.15
+  seeds: [42]
+
+model_config:
+  family: baseline
+  strategy: last_observed
+  input_feature: pr_mm  # Valor de precipitación del día actual
+  horizon: 1            # Solo aplicable a horizonte 1 día
+
+outputs:
+  save_predictions: true
+  save_figures: true
+  save_model: false
+  update_leaderboard: true
+  figures:
+    - persistence_vs_observed_scatter
+    - persistence_vs_observed_timeseries
+    - error_distribution
+
+notes:
+  - "Persistencia es un baseline estándar en predicción de series de tiempo"
+  - "Para horizontes > 1 día, la persistencia pierde rápidamente habilidad"
+  - "Comparar contra M0 (climatología) para determinar qué baseline es más difícil de superar por estación"

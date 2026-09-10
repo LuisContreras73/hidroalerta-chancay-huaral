@@ -1,0 +1,262 @@
+# ================================================================
+#  Catálogo de Estaciones - Cuenca Chancay-Huaral
+#  Proyección: WGS84 (EPSG:4326) para coords; UTM 18S (EPSG:32718) para análisis espacial
+#  Fuentes: SNIRH/ANA (descarga 18/05/2026), SENAMHI, literatura ANA 2014
+# ================================================================
+
+projection:
+  geographic:  EPSG:4326    # WGS84 - almacenamiento de coordenadas
+  projected:   EPSG:32718   # UTM Zona 18S - cálculos de distancia / área
+  basin_utm_zone: 18S
+
+# ──────────────────────────────────────────────────────────────────
+# ESTACIONES HIDROMÉTRICAS (caudal / nivel)
+# Fuente: SNIRH/ANA - descarga directa xlsx
+# ──────────────────────────────────────────────────────────────────
+hydrometrics:
+
+  - id: santo_domingo_auto
+    name: "Santo Domingo"
+    code: "47E214D2"
+    code_phisis: "PHISIS0137"
+    type: "Automática / Hidromética"
+    operator: "SENAMHI"
+    lat: -11.3701
+    lon: -77.0282
+    alt_m: 614
+    rio: "Río Chancay-Huaral"
+    distrito: "Huaral"
+    provincia: "Huaral"
+    departamento: "Lima"
+    ala: "Chancay Huaral"
+    variables:
+      - {name: "caudal_diario",    units: "m3/s", freq: "1D",  file_pattern: "*143819*"}
+      - {name: "caudal_horario",   units: "m3/s", freq: "1H",  file_pattern: "*143815*"}
+    period_approx: "2020-2026"
+    quality: "primaria_sin_control"
+    notes: >
+      Estación principal para calibración GR4J y entrenamiento TFT.
+      Lat/lon verificadas con SNIRH. Duplicada como PHISIS0137 (manual) en lat=-11.3836, lon=-77.0503.
+
+  - id: santo_domingo_manual
+    name: "Santo Domingo (Manual)"
+    code: "PHISIS0137"
+    type: "Convencional / Hidromética"
+    operator: "SENAMHI"
+    lat: -11.3836
+    lon: -77.0503
+    alt_m: null
+    rio: "Río Chancay-Huaral"
+    distrito: "Huaral"
+    provincia: "Huaral"
+    departamento: "Lima"
+    ala: "Chancay Huaral"
+    variables:
+      - {name: "caudal_diario",  units: "m3/s", freq: "1D", file_pattern: "*143727*"}
+      - {name: "nivel_diario",   units: "m",    freq: "1D", file_pattern: "*143759*"}
+      - {name: "nivel_horario",  units: "m",    freq: "1H", file_pattern: "*143803*"}
+      - {name: "caudal_horario", units: "m3/s", freq: "1H", file_pattern: "*143808*"}
+    period_approx: "~2020-2026"
+    quality: "primaria_sin_control"
+
+  - id: puente_callantama
+    name: "Puente Callantama"
+    code: "47E22148"
+    type: "Automática / Hidromética"
+    operator: "SENAMHI"
+    lat: -11.2989
+    lon: -76.8518
+    alt_m: 1378
+    rio: "Río Chancay-Huaral"
+    distrito: "Lampian"
+    provincia: "Huaral"
+    departamento: "Lima"
+    ala: "Chancay Huaral"
+    variables:
+      - {name: "caudal_diario",  units: "m3/s", freq: "1D", file_pattern: "*143916*"}
+      - {name: "caudal_horario", units: "m3/s", freq: "1H", file_pattern: "*143920*"}
+    period_approx: "~2020-2026"
+    quality: "primaria_sin_control"
+    notes: "Estación intermedia. Alta resolución temporal (horaria)."
+
+  - id: vichaycocha
+    name: "Vichaycocha"
+    code: "47E257D8"
+    type: "Automática / Hidromética"
+    operator: "SENAMHI"
+    lat: -11.1392
+    lon: -76.6246
+    alt_m: 3503
+    rio: "Río Vichaycocha (afluente)"
+    distrito: "Pacaraos"
+    provincia: "Huaral"
+    departamento: "Lima"
+    ala: "Chancay Huaral"
+    variables:
+      - {name: "caudal_diario",  units: "m3/s", freq: "1D", file_pattern: "*143926*"}
+      - {name: "caudal_horario", units: "m3/s", freq: "1H", file_pattern: "*143930*"}
+    period_approx: "~2020-2026"
+    quality: "primaria_sin_control"
+    notes: "Sub-cuenca Vichaycocha (naciente). Útil para routing hidrológico."
+
+# ──────────────────────────────────────────────────────────────────
+# ESTACIONES PLUVIOMÉTRICAS (SNIRH - descarga directa xlsx)
+# ──────────────────────────────────────────────────────────────────
+pluviometric_snirh:
+
+  - id: santa_cruz_snirh
+    name: "Santa Cruz"
+    code: "155202"
+    type: "Convencional / Climática"
+    operator: "SENAMHI"
+    lat: -11.2000
+    lon: -76.6333
+    alt_m: 3700
+    distrito: "Santa Cruz de Andamarca"
+    provincia: "Huaral"
+    departamento: "Lima"
+    variables:
+      - {name: "precip_diaria", units: "mm", freq: "1D", file_pattern: "*144806*"}
+    period_approx: "~1963-2024"
+    quality: "primaria_sin_control"
+
+  - id: pirca_snirh
+    name: "Pirca"
+    code: "155214"
+    type: "Convencional / Climática"
+    operator: "SENAMHI"
+    lat: -11.2333
+    lon: -76.6500
+    alt_m: 3255
+    distrito: "Atavillos Alto"
+    provincia: "Huaral"
+    departamento: "Lima"
+    variables:
+      - {name: "precip_diaria", units: "mm", freq: "1D", file_pattern: "*144818*"}
+    period_approx: "~1963-2025"
+    quality: "primaria_sin_control"
+
+# ──────────────────────────────────────────────────────────────────
+# ESTACIONES SENAMHI - archivos .txt descargados
+# Formato: YEAR MONTH DAY PR TMAX TMIN (sep=espacio/tab, -99.9=missing)
+# Coordenadas: SNIRH (exactas) o literatura ANA (aproximadas *)
+# ──────────────────────────────────────────────────────────────────
+meteorologic_senamhi:
+
+  - id: santa_cruz
+    name: "Santa Cruz"
+    code: "155202"
+    file: "SANTA CRUZ.txt"
+    lat: -11.2000
+    lon: -76.6333
+    alt_m: 3700
+    coord_source: "SNIRH (exacto)"
+    coord_confidence: high
+    variables: [pr]          # solo precipitación (tmax/tmin = 0 o -99.9)
+    period_approx: "1963-2016"
+    distrito: "Santa Cruz de Andamarca"
+
+  - id: pirca
+    name: "Pirca"
+    code: "155214"
+    file: "PIRCA.txt"
+    lat: -11.2333
+    lon: -76.6500
+    alt_m: 3255
+    coord_source: "SNIRH (exacto)"
+    coord_confidence: high
+    variables: [pr]
+    period_approx: "1963-2016"
+    distrito: "Atavillos Alto"
+
+  - id: pallac
+    name: "Pallac"
+    code: null
+    file: "PALLAC.txt"
+    lat: -11.3500
+    lon: -76.8000
+    alt_m: 2333
+    coord_source: "ANA Red SAIH 2014 (aproximado)"
+    coord_confidence: medium
+    variables: [pr, tmax, tmin]
+    period_approx: "1963-2016"
+    notes: "Una de las 4 estaciones meteorológicas automáticas red ANA-SENAMHI transferidas en 2014."
+
+  - id: pachamachay
+    name: "Pachamachay"
+    code: null
+    file: "PACHAMACHAY.txt"
+    lat: -11.1833
+    lon: -76.7833
+    alt_m: 4200
+    coord_source: "SNIRH/literatura (aproximado)"
+    coord_confidence: medium
+    variables: [pr, tmax, tmin]
+    period_approx: "1963-2016"
+    notes: "Estación de alta montaña, posiblemente en sub-cuenca Vichaycocha/Laguna Pachamachay."
+
+  - id: picoy
+    name: "Picoy"
+    code: null
+    file: "PICOY.txt"
+    lat: -10.9330
+    lon: -76.7330
+    alt_m: 2990
+    coord_source: "SNIRH (aproximado)"
+    coord_confidence: medium
+    variables: [pr, tmax, tmin]
+    period_approx: "1967-2016"
+
+  - id: donoso
+    name: "Donoso (EAMA)"
+    code: null
+    file: "DONOSO.txt"
+    lat: -11.4500
+    lon: -77.1200
+    alt_m: 350
+    coord_source: "SENAMHI/INIA nota prensa 2022 (aproximado)"
+    coord_confidence: medium
+    variables: [pr, tmax, tmin]
+    period_approx: "1984-2016"
+    notes: >
+      Estación Agrometeorológica Automática km 5.6 Carretera Chancay-Huaral.
+      Zona baja / costera de la cuenca.
+
+  - id: huayan
+    name: "Huayan"
+    code: null
+    file: "HUAYAN.txt"
+    lat: -11.3100
+    lon: -76.9000
+    alt_m: 2800
+    coord_source: "estimado por ubicación distrital (VERIFICAR)"
+    coord_confidence: low
+    variables: [pr, tmax, tmin]
+    period_approx: "1963-2016"
+    notes: "Coordenadas aproximadas. Buscar en catálogo SENAMHI oficial o base de datos GEO GPS Perú."
+
+  - id: paccho
+    name: "Paccho"
+    code: null
+    file: "PACCHO.txt"
+    lat: -11.4000
+    lon: -77.1500
+    alt_m: 1800
+    coord_source: "estimado por distrito Paccho (VERIFICAR)"
+    coord_confidence: low
+    variables: [pr, tmax, tmin]
+    period_approx: "1963-2016"
+    notes: "Coordenadas aproximadas basadas en la capital del distrito Paccho. Verificar con SENAMHI."
+
+  - id: parquin
+    name: "Parquin"
+    code: null
+    file: "PARQUIN.txt"
+    lat: -11.3500
+    lon: -76.9500
+    alt_m: 2500
+    coord_source: "estimado por posición en cuenca (VERIFICAR)"
+    coord_confidence: low
+    variables: [pr, tmax, tmin]
+    period_approx: "1963-2016"
+    notes: "Coordenadas a verificar. Posiblemente en Distrito Atavillos Bajo o Lampian."

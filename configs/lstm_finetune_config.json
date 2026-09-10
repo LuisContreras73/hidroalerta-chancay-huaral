@@ -1,0 +1,14 @@
+{
+  "strategy": "2-phase finetune",
+  "encoder_len": 90,
+  "lr_phase1": 0.001,
+  "lr_phase2": 0.0001,
+  "pretrain": "1981-2020 GR4J",
+  "finetune": "2021-2022 Q obs real",
+  "test": "2024-2025 Q obs real",
+  "time_phase1_s": 15.7,
+  "time_phase2_s": 0.4,
+  "baseline_NSE": 0.0908999964594841,
+  "finetuned_NSE": 0.3959999978542328,
+  "delta_NSE": 0.3050999939441681
+}

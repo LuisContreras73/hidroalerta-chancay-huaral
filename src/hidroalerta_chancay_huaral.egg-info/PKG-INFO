@@ -1,0 +1,310 @@
+Metadata-Version: 2.4
+Name: hidroalerta-chancay-huaral
+Version: 0.1.0
+Summary: Sistema de alerta hidrológica para la cuenca Chancay-Huaral - ANA Concurso
+Author-email: Luis Contreras <luis.contreras@utec.edu.pe>
+License: MIT
+Keywords: hydrology,flood-warning,machine-learning,peru,chancay-huaral
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Scientific/Engineering :: Hydrology
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: pandas>=2.1
+Requires-Dist: numpy>=1.26
+Requires-Dist: scipy>=1.11
+Requires-Dist: statsmodels>=0.14
+Requires-Dist: matplotlib>=3.8
+Requires-Dist: seaborn>=0.13
+Requires-Dist: scikit-learn>=1.4
+Requires-Dist: xgboost>=2.0
+Requires-Dist: lightgbm>=4.1
+Requires-Dist: xarray>=2023.12
+Requires-Dist: netCDF4>=1.6
+Requires-Dist: geopandas>=0.14
+Requires-Dist: rasterio>=1.3
+Requires-Dist: rioxarray>=0.15
+Requires-Dist: shapely>=2.0
+Requires-Dist: pyproj>=3.6
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: click>=8.1
+Requires-Dist: tqdm>=4.66
+Requires-Dist: python-dotenv>=1.0
+Requires-Dist: openpyxl>=3.1
+Requires-Dist: xlrd>=2.0
+Provides-Extra: deep-learning
+Requires-Dist: torch>=2.1; extra == "deep-learning"
+Requires-Dist: pytorch-forecasting>=1.0; extra == "deep-learning"
+Requires-Dist: lightning>=2.1; extra == "deep-learning"
+Requires-Dist: optuna>=3.4; extra == "deep-learning"
+Provides-Extra: hydrology
+Requires-Dist: hydroeval>=0.1; extra == "hydrology"
+Requires-Dist: spotpy>=1.6; extra == "hydrology"
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4; extra == "dev"
+Requires-Dist: pytest-cov>=4.1; extra == "dev"
+Requires-Dist: black>=23.0; extra == "dev"
+Requires-Dist: ruff>=0.1; extra == "dev"
+Requires-Dist: mypy>=1.5; extra == "dev"
+Requires-Dist: pre-commit>=3.5; extra == "dev"
+Requires-Dist: ipykernel>=6.26; extra == "dev"
+Requires-Dist: nbformat>=5.9; extra == "dev"
+Provides-Extra: all
+Requires-Dist: hidroalerta-chancay-huaral[deep_learning,dev,hydrology]; extra == "all"
+
+# HidroAlerta Chancay-Huaral
+
+**Sistema de IA + IoT para monitoreo, pronóstico probabilístico, explicabilidad y alerta temprana de seguridad hídrica en la cuenca Chancay-Huaral, Peru.**
+
+Desarrollado como parte del **Concurso de Ciencia y Tecnología para la Seguridad Hídrica** de la Autoridad Nacional del Agua (ANA) del Peru.
+
+---
+
+## Descripcion del Producto
+
+HidroAlerta Chancay-Huaral integra:
+
+- **Monitoreo hidroclimatico**: ingesta automatizada de datos PISCO (precipitacion, temperatura) y fuentes observadas (SENAMHI, ANA/SNIRH, CRHC Chancay-Huaral).
+- **Pronostico probabilistico**: modelos estadisticos, ML y (en fase futura) deep learning para horizonte 1-7 dias.
+- **Explicabilidad (XAI)**: SHAP values para comunicar a usuarios no tecnicos que factores impulsan cada alerta.
+- **Alerta temprana**: categorizacion de riesgo hídrico con umbrales calibrados para la cuenca.
+- **Modulo climatico preliminar**: operativo hoy con datos PISCO. El modulo hidrologico completo (con caudal observado) se activara cuando se cuente con datos ANA/SENAMHI.
+
+> **IMPORTANTE**: El modulo actualmente operativo es un **modulo climatico preliminar** basado en precipitacion PISCO. No es un pronostico de caudal. El pronostico hidrologico (caudal, nivel) requiere datos observados de caudal que aun no estan disponibles.
+
+---
+
+## Instalacion Rapida
+
+### Requisitos previos
+- Python 3.10 o superior
+- conda (Miniconda o Anaconda recomendado)
+- Git
+
+### Paso 1: Clonar el repositorio
+
+```bash
+git clone <url-del-repo>
+cd hidroalerta_chancay_huaral
+```
+
+### Paso 2: Crear entorno conda
+
+```bash
+conda create -n hidroalerta python=3.10 -y
+conda activate hidroalerta
+```
+
+### Paso 3: Instalar dependencias
+
+```bash
+pip install -r requirements.txt
+```
+
+O instalar el paquete en modo desarrollo:
+
+```bash
+pip install -e .
+```
+
+### Paso 4: Verificar instalacion
+
+```bash
+python -c "import src; print('OK')"
+```
+
+---
+
+## Avance Rapido del Dia
+
+Para generar rapidamente los resultados del dia con el modulo climatico preliminar (PISCO):
+
+```bash
+conda activate hidroalerta
+python scripts/15_quick_today_result.py
+```
+
+Este script:
+1. Carga los datos PISCO procesados desde `data/gold/` o `data/model_ready/`
+2. Entrena los modelos baseline (climatologia, persistencia) y ML (Random Forest, XGBoost)
+3. Calcula metricas de evaluacion (MAE, RMSE, NSE, KGE)
+4. Genera figuras en `outputs/figures/`
+5. Actualiza el leaderboard en `outputs/leaderboard/all_runs.csv`
+6. Imprime un resumen en consola
+
+---
+
+## Reproducir Resultados Completos
+
+### Pipeline completo paso a paso
+
+```bash
+# 1. Ingesta de datos PISCO
+python scripts/01_ingest_pisco.py
+
+# 2. Limpieza y QA/QC
+python scripts/02_clean_bronze.py
+
+# 3. Feature engineering
+python scripts/03_build_features_silver.py
+
+# 4. Construccion del dataset model-ready
+python scripts/04_build_gold.py
+
+# 5. Entrenamiento de todos los modelos
+python scripts/05_train_baselines.py
+python scripts/06_train_ml_models.py
+
+# 6. Evaluacion y leaderboard
+python scripts/07_evaluate_all.py
+
+# 7. Figuras y reportes
+python scripts/08_generate_figures.py
+```
+
+### Pipeline en un solo comando (cuando este disponible)
+
+```bash
+python scripts/00_run_full_pipeline.py
+```
+
+---
+
+## Estructura del Proyecto
+
+```
+hidroalerta_chancay_huaral/
+├── README.md                    # Este archivo
+├── PROJECT_CONTEXT.md           # Contexto de la cuenca y el concurso
+├── PROMPT_MEMORY.md             # Memoria para sesiones IA
+├── DATA_DICTIONARY.md           # Diccionario de variables
+├── METHODOLOGY.md               # Metodologia tecnica completa
+├── MODEL_REGISTRY.md            # Registro de modelos
+├── EXPERIMENT_LOG.md            # Log de experimentos
+├── TROUBLESHOOTING_LOG.md       # Log de problemas
+├── DECISIONS.md                 # Registro de decisiones
+├── CHANGELOG.md                 # Historial de cambios
+├── RUNBOOK.md                   # Guia operativa
+├── RESEARCH_NOTES.md            # Notas de investigacion
+├── TODAY_PROGRESS.md            # Avance del dia actual
+├── requirements.txt
+├── setup.py / pyproject.toml
+│
+├── configs/                     # Configuraciones YAML/JSON
+│   ├── data_config.yaml
+│   ├── model_config.yaml
+│   └── pipeline_config.yaml
+│
+├── data/
+│   ├── raw/                     # Datos originales, NUNCA modificar
+│   │   ├── pisco/
+│   │   ├── senamhi/
+│   │   └── ana_snirh/
+│   ├── bronze/                  # Datos ingestados, formato estandar
+│   ├── silver/                  # Datos limpios + features
+│   ├── gold/                    # Dataset final para modelado
+│   └── model_ready/             # Train/val/test splits
+│
+├── docs/
+│   ├── DATA_SOURCES_LINKS.md    # Fuentes de datos y enlaces
+│   └── figures/                 # Figuras de documentacion
+│
+├── notebooks/                   # Jupyter notebooks exploratorios
+│   ├── 01_exploracion_pisco.ipynb
+│   ├── 02_feature_engineering.ipynb
+│   └── 03_modelos_baseline.ipynb
+│
+├── outputs/
+│   ├── runs/                    # Una carpeta por corrida
+│   │   └── <model_family>/
+│   │       └── <model_name>/
+│   │           └── <run_id>/
+│   ├── figures/                 # Figuras generadas
+│   ├── leaderboard/
+│   │   └── all_runs.csv         # Leaderboard global
+│   └── reports/                 # Reportes PDF/HTML
+│
+├── scripts/                     # Scripts ejecutables del pipeline
+│   ├── 01_ingest_pisco.py
+│   ├── 02_clean_bronze.py
+│   ├── 03_build_features_silver.py
+│   ├── 04_build_gold.py
+│   ├── 05_train_baselines.py
+│   ├── 06_train_ml_models.py
+│   ├── 07_evaluate_all.py
+│   ├── 08_generate_figures.py
+│   └── 15_quick_today_result.py
+│
+├── src/                         # Codigo fuente reutilizable
+│   ├── data/                    # Loaders, cleaners, validators
+│   ├── features/                # Feature engineering
+│   ├── models/                  # Implementaciones de modelos
+│   ├── evaluation/              # Metricas y evaluacion
+│   ├── visualization/           # Graficos y reportes
+│   └── utils/                   # Utilidades generales
+│
+└── tests/                       # Tests unitarios e integracion
+    ├── test_data.py
+    ├── test_features.py
+    └── test_models.py
+```
+
+---
+
+## Como Interpretar el Leaderboard
+
+El archivo `outputs/leaderboard/all_runs.csv` contiene una fila por corrida con:
+
+| Columna | Descripcion |
+|---|---|
+| `run_id` | Identificador unico: `YYYYMMDD_HHMMSS__modelname__target__horizon__datasetversion__seed` |
+| `model_name` | Nombre del modelo |
+| `target` | Variable objetivo (ej. `pr_sum_next_7d`) |
+| `horizon` | Horizonte de pronostico en dias |
+| `mae` | Error absoluto medio |
+| `rmse` | Raiz del error cuadratico medio |
+| `nse` | Nash-Sutcliffe Efficiency (-inf a 1, mejor = 1) |
+| `kge` | Kling-Gupta Efficiency (-inf a 1, mejor = 1) |
+| `pbias` | Sesgo porcentual (%, ideal = 0) |
+| `r2` | Coeficiente de determinacion |
+| `split` | train / val / test |
+| `dataset_version` | Version del dataset usado |
+| `status` | completed / failed / running |
+
+**Criterio de ranking primario**: NSE en test set (mayor es mejor).
+**Criterio secundario**: KGE en test set.
+
+Un modelo con NSE > 0.5 se considera aceptable. NSE > 0.7 es bueno. NSE > 0.9 es excelente.
+
+---
+
+## Concurso ANA
+
+Este proyecto fue desarrollado para el **Concurso de Ciencia y Tecnología para la Seguridad Hídrica**, convocado por la **Autoridad Nacional del Agua (ANA)** del Peru.
+
+- Institucion: ANA (Autoridad Nacional del Agua)
+- Pais: Peru
+- Cuenca objetivo: Chancay-Huaral
+- Contacto del equipo: luis.contreras@utec.edu.pe
+
+---
+
+## Estado Actual del Proyecto (2026-05-18)
+
+| Componente | Estado |
+|---|---|
+| Datos PISCO (pr, tmax, tmin) | Disponible |
+| Feature engineering | Implementado |
+| Modelos baseline | Implementado |
+| Modelos ML (RF, XGB, LGB) | Implementado |
+| Datos observados caudal (ANA/SENAMHI) | Pendiente |
+| Modulo hidrologico (GR4J) | Futuro |
+| TFT deep learning | Futuro |
+| API de alertas | Futuro |
+
+---
+
+## Licencia
+
+MIT License - ver archivo LICENSE para detalles.

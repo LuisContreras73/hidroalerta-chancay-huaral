@@ -1,0 +1,114 @@
+model: GR4J
+reference: Perrin et al. (2003) doi:10.1016/S0022-1694(03)00225-7
+calibration_date: '2026-05-29'
+basin: Chancay-Huaral
+area_km2: 3062.62
+q_station: q_santo_domingo_47e214d2
+pr_source: PISCOp v3.0 — B2_pisco_v3_basin_mean.csv (D050)
+pet_source: B2_pet_era5pm_1981_2025.csv — hscal 1981-2020 + ERA5 pev bias-corrected
+  2021-2025 (script 08f)
+objective: 0.4×NSE + 0.3×KGE + 0.2×NSE_log − 0.1×|PBIAS_Q90|/100 (D052)
+optimizer: differential_evolution (seed=42, maxiter=300) + Nelder-Mead polish
+parameters:
+  X1: 100.007
+  X2: 1.01689
+  X3: 7.347
+  X4: 1.2788
+dsst_gate: FAIL
+dsst_thresholds:
+  NSE_DSST: 0.6
+  NSE_SST: 0.65
+  NSE_cal: 0.7
+experiments:
+  E1:
+    description: E1 Cal_seco → Val_húmedo (DSST)
+    params:
+      X1: 100.045
+      X2: 1.23237
+      X3: 9.08
+      X4: 0.9054
+    metrics_cal:
+      KGE: 0.127
+      NSE: 0.218
+      logNSE: 0.233
+      PBIAS: -3.4
+      PBIAS_Q90: -64.2
+      r: 0.835
+      RMSE: 0.486
+      N: 724
+    metrics_val:
+      KGE: 0.568
+      NSE: 0.254
+      logNSE: 0.195
+      PBIAS: 30.3
+      PBIAS_Q90: -20.4
+      r: 0.693
+      RMSE: 0.334
+      N: 905
+  E2:
+    description: E2 Cal_húmedo → Val_seco (DSST)
+    params:
+      X1: 100.198
+      X2: 0.63291
+      X3: 3.715
+      X4: 2.2468
+    metrics_cal:
+      KGE: 0.691
+      NSE: 0.471
+      logNSE: 0.405
+      PBIAS: -0.3
+      PBIAS_Q90: -34.5
+      r: 0.71
+      RMSE: 0.281
+      N: 905
+    metrics_val:
+      KGE: 0.074
+      NSE: 0.135
+      logNSE: 0.214
+      PBIAS: -26.5
+      PBIAS_Q90: -71.3
+      r: 0.797
+      RMSE: 0.512
+      N: 724
+  E3:
+    description: E3 SST cronológico (60/40)
+    params:
+      X1: 100.008
+      X2: 0.98043
+      X3: 6.729
+      X4: 1.3103
+    metrics_cal:
+      KGE: 0.447
+      NSE: 0.305
+      logNSE: 0.343
+      PBIAS: -1.0
+      PBIAS_Q90: -46.4
+      r: 0.561
+      RMSE: 0.462
+      N: 977
+    metrics_val:
+      KGE: -0.01
+      NSE: 0.016
+      logNSE: -0.03
+      PBIAS: 11.4
+      PBIAS_Q90: -58.1
+      r: 0.75
+      RMSE: 0.275
+      N: 652
+  E4:
+    description: E4 Final — todos Q obs
+    params:
+      X1: 100.007
+      X2: 1.01689
+      X3: 7.347
+      X4: 1.2788
+    metrics_cal:
+      KGE: 0.398
+      NSE: 0.279
+      logNSE: 0.297
+      PBIAS: -1.5
+      PBIAS_Q90: -50.6
+      r: 0.534
+      RMSE: 0.398
+      N: 1629
+    metrics_val: null

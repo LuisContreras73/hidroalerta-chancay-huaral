@@ -1,0 +1,62 @@
+# Reglas de control de calidad para datos hidrometeorológicos
+
+precipitation:
+  variable: pr_mm
+  unit: mm/day
+  range:
+    min: 0.0
+    max: 300.0  # Máximo histórico posible en la cuenca
+  spike_threshold_sigma: 4.0
+  consecutive_zero_days_max: 60  # Más de 60 días secos seguidos = sospechoso en zona húmeda
+  consecutive_same_value_max: 5
+  flags:
+    - BELOW_MIN: "Valor negativo"
+    - ABOVE_MAX: "Por encima de máximo físico"
+    - SPIKE: "Cambio abrupto > 4 sigma"
+    - CONSECUTIVE_SAME: "Más de 5 valores iguales consecutivos"
+    - MISSING: "NaN o dato ausente"
+
+temperature_max:
+  variable: tmax_c
+  unit: celsius
+  range:
+    min: -5.0
+    max: 40.0
+  spike_threshold_sigma: 4.0
+  consistency:
+    must_be_gt: tmin_c
+    margin_min: 0.5  # tmax debe ser al menos 0.5°C mayor que tmin
+
+temperature_min:
+  variable: tmin_c
+  unit: celsius
+  range:
+    min: -15.0
+    max: 30.0
+  spike_threshold_sigma: 4.0
+
+streamflow:
+  variable: q_m3s
+  unit: m3/s
+  range:
+    min: 0.0
+    max: 2000.0  # Caudal máximo histórico estimado Chancay-Huaral
+  spike_threshold_sigma: 5.0
+  consecutive_zero_days_max: 30
+  flags:
+    - ICE_EFFECT: "Período de posible congelamiento (no aplica cuenca tropical)"
+    - REGULATED_EFFECT: "Influencia de embalse/regulación"
+
+gap_handling:
+  max_gap_interpolate_days: 3  # Interpolar hasta 3 días consecutivos
+  max_gap_flag_days: 30        # Gaps mayores a 30 días se marcan como problemáticos
+  interpolation_method: linear
+  gap_fill_for_evaluation: false  # NUNCA rellenar target para evaluación
+  gap_fill_for_encoder: true      # Sí se puede rellenar para continuidad del encoder
+
+quality_score:
+  perfect: 1.0
+  minor_issues: 0.8
+  interpolated: 0.6
+  flagged: 0.4
+  invalid: 0.0

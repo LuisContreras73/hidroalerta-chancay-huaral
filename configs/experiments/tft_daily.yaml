@@ -1,0 +1,102 @@
+experiment:
+  name: tft_pisco_daily
+  description: "Temporal Fusion Transformer para pronóstico probabilístico pluviométrico"
+  objective: "Pronóstico probabilístico multihorizonte con cuantiles y atención interpretable"
+  status: future  # Requiere pytorch-forecasting y datos validados
+  model: M13_tft
+  dataset_version: D4_pisco_model_ready_precip
+  all_targets: [pr_next_1d, pr_sum_next_3d, pr_sum_next_7d]
+  primary_target: pr_sum_next_7d
+  feature_set: pisco_lags_calendar_fourier
+  split_strategy: temporal_holdout
+  train_ratio: 0.70
+  val_ratio: 0.15
+  test_ratio: 0.15
+  seeds: [42]
+
+prerequisites:
+  - "D4_pisco_model_ready_precip.csv validado"
+  - "LSTM (M10) ejecutado y resultados en leaderboard"
+  - "pytorch-forecasting instalado"
+  - "lightning instalado"
+
+sequence_config:
+  encoder_length: 60      # días de contexto histórico
+  prediction_length: 7    # días de pronóstico
+  step: 1
+
+model_architecture:
+  hidden_size: [16, 32]
+  attention_head_size: 4
+  dropout: 0.1
+  hidden_continuous_size: 8
+  output_size: 3          # Número de cuantiles [p10, p50, p90]
+
+training:
+  learning_rate: 0.001
+  batch_size: [32, 64]
+  max_epochs: 20
+  patience: 5
+  gradient_clip_val: 0.1
+  optimizer: Adam
+  loss_function: QuantileLoss
+  quantiles: [0.1, 0.5, 0.9]
+
+known_future_inputs:
+  # SOLO variables realmente disponibles antes del pronóstico
+  - day_of_year
+  - hydro_month
+  - hydro_phase
+  - sin_doy_1
+  - cos_doy_1
+  - sin_doy_2
+  - cos_doy_2
+  - clim_pr_p50_doy    # Climatología histórica (calculada en train)
+  - clim_pr_p90_doy    # Climatología histórica (calculada en train)
+  - forecast_horizon   # Índice del horizonte de pronóstico (1..7)
+
+past_inputs:
+  # Variables solo disponibles hasta el día actual
+  - pr_mm
+  - pr_lag_1
+  - pr_lag_3
+  - pr_lag_7
+  - pr_sum_7d
+  - pr_sum_30d
+  - api_15d
+  - api_30d
+  - tmax_c
+  - tmin_c
+  - tmean_c
+
+static_categoricals:
+  - entity_id  # Identificador de la cuenca/punto
+
+hyperparameter_search:
+  n_trials: 8
+  search_type: random
+  framework: optuna
+
+outputs:
+  save_predictions: true
+  save_figures: true
+  save_model: true
+  checkpoint_best: true
+  update_leaderboard: true
+  figures:
+    - quantile_forecast_ribbon
+    - coverage_p10_p90_by_month
+    - attention_weights_heatmap
+    - feature_importance_tft
+    - calibration_curve_quantiles
+
+metrics_probabilistic:
+  primary: pinball_p50
+  secondary: [pinball_p10, pinball_p90, coverage_p10_p90, interval_width_mean, winkler_score]
+
+notes:
+  - "TFT es el modelo más complejo del pipeline; ejecutar al final"
+  - "known_future_inputs: NUNCA incluir variables no disponibles en producción"
+  - "La cobertura del intervalo [p10, p90] debe aproximarse al 80% en test"
+  - "attention_weights permite interpretar qué días pasados son más relevantes"
+  - "Documentar si supera LSTM en NSE y en cobertura probabilística"

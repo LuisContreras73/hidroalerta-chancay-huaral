@@ -1,0 +1,42 @@
+experiment:
+  name: quick_today_pisco_allmodels
+  description: "Avance rápido módulo climático preliminar con PISCO"
+  objective: "Demostrar pronóstico pluviométrico con PISCO. Paso previo al pronóstico hidrológico."
+  date: "2026-05-18"
+  dataset_version: D4_pisco_model_ready_precip
+  target: pr_sum_next_7d
+  all_targets: [pr_next_1d, pr_sum_next_3d, pr_sum_next_7d]
+  horizon: 7
+  feature_set: pisco_lags_calendar_fourier
+  split_strategy: temporal_holdout
+  train_ratio: 0.70
+  val_ratio: 0.15
+  test_ratio: 0.15
+  n_trials: 5
+  search_type: random
+  seeds: [42]
+
+models_to_run:
+  - M0_climatology_doy
+  - M1_persistence
+  - M2_seasonal_naive
+  - M3_linear_lags
+  - M4_ridge
+  - M5_random_forest
+  - M6_xgboost
+  - M7_lightgbm
+
+outputs:
+  save_predictions: true
+  save_figures: true
+  save_model: true
+  update_leaderboard: true
+  generate_report: true
+  report_path: "outputs/reports/preliminary_today_report.md"
+
+success_criteria:
+  - "data/model_ready/D4_pisco_model_ready_precip.csv creado"
+  - "outputs/leaderboards/all_runs.csv con al menos 3 modelos"
+  - "outputs/figures/model_comparison/leaderboard_barplot.png"
+  - "outputs/reports/preliminary_today_report.md"
+  - "TODAY_PROGRESS.md actualizado"

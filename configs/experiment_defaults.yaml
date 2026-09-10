@@ -1,0 +1,36 @@
+# Valores por defecto para todos los experimentos
+
+tracking:
+  run_id_format: "YYYYMMDD_HHMMSS__modelname__target__horizon__datasetversion__seed"
+  base_run_dir: "outputs/runs"
+  leaderboard_path: "outputs/leaderboards/all_runs.csv"
+
+defaults:
+  seeds: [42]
+  n_trials: 5
+  search_type: random
+  dataset_version: D4_pisco_model_ready_precip
+  feature_set: pisco_lags_calendar_fourier
+
+metrics:
+  regression:
+    primary: nse
+    secondary: [mae, rmse, kge, pbias, r2, pearson, spearman]
+  probabilistic:
+    primary: pinball_p50
+    secondary: [pinball_p10, pinball_p90, coverage_p10_p90, interval_width]
+  classification:
+    primary: macro_f1
+    secondary: [accuracy, balanced_accuracy]
+
+figures:
+  dpi: 150
+  format: png
+  style: seaborn-v0_8-whitegrid
+  figsize_default: [12, 6]
+  save_all: true
+
+logging:
+  level: INFO
+  format: "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+  save_to_file: true

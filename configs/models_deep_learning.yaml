@@ -1,0 +1,46 @@
+models:
+  M10_lstm:
+    family: deep_learning
+    description: "LSTM para pronóstico pluviométrico"
+    status: future
+    requires: [validated_model_ready_data, pytorch]
+    params:
+      hidden_size: [32, 64, 128]
+      num_layers: [1, 2]
+      dropout: [0.1, 0.2]
+      learning_rate: [0.001, 0.0005]
+      batch_size: [32, 64]
+      max_epochs: 50
+      encoder_length: 60
+
+  M13_tft:
+    family: deep_learning
+    description: "Temporal Fusion Transformer"
+    status: future
+    requires: [pytorch_forecasting, validated_model_ready_data]
+    params:
+      encoder_length: 60  # días de contexto
+      prediction_length: 7  # días de pronóstico
+      hidden_size: [16, 32]
+      attention_head_size: 4
+      dropout: 0.1
+      hidden_continuous_size: 8
+      learning_rate: 0.001
+      batch_size: [32, 64]
+      max_epochs: 20
+      quantiles: [0.1, 0.5, 0.9]
+      gradient_clip_val: 0.1
+    known_future_inputs:
+      - day_of_year
+      - hydro_month
+      - hydro_phase
+      - sin_doy_1
+      - cos_doy_1
+      - sin_doy_2
+      - cos_doy_2
+      - clim_pr_p50_doy
+      - clim_pr_p90_doy
+      - forecast_horizon
+    static_categoricals:
+      - entity_id
+    note: "Solo variables realmente conocidas antes del pronóstico en known_future_inputs"

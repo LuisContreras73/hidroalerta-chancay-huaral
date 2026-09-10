@@ -1,0 +1,65 @@
+experiment:
+  name: gr4j_daily_chancay
+  description: "GR4J modelo hidrológico lumped diario para la cuenca Chancay-Huaral"
+  objective: "Simular caudal diario en la salida de la cuenca usando forzamiento PISCO y PET Hargreaves"
+  status: future  # Requiere caudal observado ANA/SENAMHI
+  model: M8_gr4j_daily
+  dataset_version: D5_observed_streamflow  # Pendiente de obtención
+  target: q_m3s
+  split_strategy: temporal_holdout
+  train_ratio: 0.70
+  val_ratio: 0.15
+  test_ratio: 0.15
+  seeds: [42]
+
+basin_parameters:
+  name: "Chancay-Huaral"
+  area_km2: 3394.0  # Área aproximada de la cuenca
+  lat_centroid: -11.35
+  lon_centroid: -76.9
+  elevation_mean_m: 2100
+  gauging_station: "Santo Domingo (QCH001)"
+
+inputs_required:
+  precipitation:
+    source: pisco_pr_mm
+    aggregation: basin_average  # Promedio espacial de la grilla PISCO sobre la cuenca
+    unit: mm/day
+  pet:
+    method: hargreaves
+    inputs: [tmax_c, tmin_c, tmean_c, ra_extraterrestrial_mm]
+    unit: mm/day
+  streamflow_observed:
+    source: ana_snirh_QCH001
+    unit: m3/s
+    status: pending
+
+calibration:
+  method: SCE-UA  # Shuffled Complex Evolution - University of Arizona
+  objective_function: NSE
+  secondary_objectives: [KGE, PBIAS, log_NSE]
+  params_bounds:
+    X1: [10, 2000]    # Capacidad del almacenamiento de producción (mm)
+    X2: [-10, 5]      # Coeficiente de intercambio de agua subterránea (mm)
+    X3: [10, 700]     # Capacidad del almacenamiento de enrutamiento (mm)
+    X4: [0.5, 10.0]   # Tiempo de base del hidrograma unitario (días)
+  n_iterations: 1000
+  n_complexes: 5
+
+outputs:
+  save_predictions: true
+  save_figures: true
+  save_model: true
+  update_leaderboard: true
+  figures:
+    - hydrograph_simulated_vs_observed
+    - flow_duration_curve
+    - monthly_water_balance
+    - scatter_obs_vs_sim
+    - parameter_sensitivity
+
+notes:
+  - "BLOQUEADO hasta obtener caudal observado QCH001 de ANA/SNIRH"
+  - "PET por Hargreaves requiere Ra extraterrestre calculado por latitud y doy"
+  - "Validar balance hídrico mensual antes de calibración"
+  - "Reportar NSE, KGE, PBIAS y log-NSE para caudales bajos y altos"

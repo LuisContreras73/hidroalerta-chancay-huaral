@@ -1,0 +1,35 @@
+models:
+  M0_climatology_doy:
+    family: baseline
+    description: "Climatología por día del año (mediana histórica)"
+    targets: [pr_next_1d, pr_sum_next_3d, pr_sum_next_7d]
+    calibration: train_only
+    params: {}
+
+  M1_persistence:
+    family: baseline
+    description: "Persistencia: usar valor actual como predicción"
+    targets: [pr_next_1d]
+    params: {}
+
+  M2_seasonal_naive:
+    family: baseline
+    description: "Valor del mismo día del año anterior"
+    targets: [pr_next_1d, pr_sum_next_7d]
+    params: {}
+
+  M3_linear_lags:
+    family: baseline
+    description: "Regresión lineal con lags básicos"
+    targets: [pr_next_1d, pr_sum_next_7d]
+    features: [pr_lag_1, pr_lag_2, pr_lag_3, pr_lag_7, sin_doy_1, cos_doy_1, month]
+    params:
+      fit_intercept: true
+
+  M4_ridge:
+    family: baseline
+    description: "Ridge regression con regularización"
+    targets: [pr_next_1d, pr_sum_next_3d, pr_sum_next_7d]
+    params_grid:
+      alpha: [0.01, 0.1, 1.0, 10.0, 100.0]
+    n_trials: 5

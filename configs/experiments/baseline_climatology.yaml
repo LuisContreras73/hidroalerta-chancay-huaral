@@ -1,0 +1,33 @@
+experiment:
+  name: baseline_climatology_doy
+  description: "Baseline climatología por día del año (mediana histórica)"
+  objective: "Establecer piso mínimo de comparación para todos los modelos predictivos"
+  dataset_version: D4_pisco_model_ready_precip
+  model: M0_climatology_doy
+  all_targets: [pr_next_1d, pr_sum_next_3d, pr_sum_next_7d]
+  split_strategy: temporal_holdout
+  train_ratio: 0.70
+  val_ratio: 0.15
+  test_ratio: 0.15
+  seeds: [42]
+
+model_config:
+  family: baseline
+  calibration: train_only
+  aggregation: doy
+  stat: median  # Mediana por día del año como predicción
+
+outputs:
+  save_predictions: true
+  save_figures: true
+  save_model: false  # No hay modelo que serializar, solo tabla de climatología
+  update_leaderboard: true
+  figures:
+    - climatology_vs_observed_timeseries
+    - monthly_climatology_boxplot
+    - doy_climatology_ribbon
+
+notes:
+  - "Este modelo no aprende del año actual, solo de la climatología histórica de train"
+  - "Sirve como cota inferior: cualquier modelo debe superarlo en NSE"
+  - "NSE < 0 respecto a este baseline indica que el modelo es inútil"

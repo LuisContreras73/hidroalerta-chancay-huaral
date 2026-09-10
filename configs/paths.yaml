@@ -1,0 +1,39 @@
+# ================================================================
+#  Rutas del proyecto HidroAlerta Chancay-Huaral
+#  Todas RELATIVAS a PROJECT_ROOT (raíz del repo).
+#  En notebooks: P = PROJECT_ROOT / paths["pisco"]["basin_mean"]
+# ================================================================
+
+pisco:
+  basin_mean:      data/bronze/B2_pisco_basin_mean_all.csv   # pr+pet+tmax+tmin 1981-2020
+
+  # Grillas espaciales (NC) — cobertura y fuente por variable
+  basin_grid_pr:   data/bronze/B2_pr_basin_grid_v21.nc       # PISCOp v2.1 1981-2019 → 2020 CHIRPS-QM (Script 05)
+  basin_grid_tmax: data/bronze/B2_tmax_basin_grid_v12.nc     # PISCOt v1.2 1981-2020 (Script 03b)
+  basin_grid_tmin: data/bronze/B2_tmin_basin_grid_v12.nc     # PISCOt v1.2 1981-2020 (Script 06)
+  basin_grid_pet:  data/bronze/B2_pet_hargreaves_cal.nc       # HS calibrado vs PISCOp 1981-2020 (Script 07)
+
+  # PET de referencia original (PISCOp v1.1, 1981-2016, Penman-Monteith)
+  basin_grid_pet_ref: data/bronze/B2_pet_basin_grid.nc
+
+snirh:
+  catalog:   data/silver/snirh/S1_snirh_catalog.csv
+  daily_q:   data/silver/snirh/S1_snirh_daily_q.csv
+
+senamhi:
+  catalog:    data/silver/senamhi/S2_senamhi_catalog.csv
+  precip_all: data/silver/senamhi/S2_senamhi_precip_all.csv
+
+shapefiles:
+  cuenca: >-
+    data/raw/shapefiles/cuenca_chancay_huaral/limite/Cuenca_Chancay___Huaral.shp
+  subcuencas: >-
+    data/raw/shapefiles/cuenca_chancay_huaral/subcuencas/Cuenca_Chancay___Huaral_SUBCUENCAS_juansuyo_931381206_geogpsperu_UH_MENORES.shp
+
+station_catalog: configs/station_catalog.yaml
+
+figures:
+  basin: outputs/figures/basin
+  eda:   outputs/figures/eda
+
+tables: outputs/tables

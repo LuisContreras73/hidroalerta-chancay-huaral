@@ -1,0 +1,68 @@
+experiment:
+  name: lstm_pisco_daily
+  description: "LSTM para pronóstico pluviométrico diario con contexto de secuencias temporales"
+  objective: "Capturar dependencias temporales largas no lineales en la serie de precipitación"
+  status: future  # Requiere datos validados y configuración PyTorch
+  model: M10_lstm
+  dataset_version: D4_pisco_model_ready_precip
+  all_targets: [pr_next_1d, pr_sum_next_3d, pr_sum_next_7d]
+  primary_target: pr_sum_next_7d
+  feature_set: pisco_lags_calendar_fourier
+  split_strategy: temporal_holdout
+  train_ratio: 0.70
+  val_ratio: 0.15
+  test_ratio: 0.15
+  seeds: [42]
+
+prerequisites:
+  - "D4_pisco_model_ready_precip.csv validado"
+  - "Baselines ML (M5-M7) ejecutados y resultados en leaderboard"
+  - "PyTorch instalado y verificado"
+  - "GPU opcional (funciona en CPU para este tamaño de dataset)"
+
+sequence_config:
+  encoder_length: 60      # días de contexto hacia atrás
+  prediction_length: 7    # días de pronóstico
+  step: 1                 # paso de avance de la ventana deslizante
+  batch_first: true
+
+model_architecture:
+  input_size: null        # Calculado automáticamente del feature_set
+  hidden_size: [32, 64, 128]
+  num_layers: [1, 2]
+  dropout: [0.1, 0.2]
+  bidirectional: false    # Unidireccional para inferencia en tiempo real
+
+training:
+  learning_rate: [0.001, 0.0005]
+  batch_size: [32, 64]
+  max_epochs: 50
+  patience: 10            # Early stopping por val_loss
+  optimizer: Adam
+  scheduler: ReduceLROnPlateau
+  scheduler_patience: 5
+  gradient_clip_val: 1.0
+  loss_function: MSE      # O Huber para robustez a outliers
+
+hyperparameter_search:
+  n_trials: 10
+  search_type: random
+  framework: optuna
+
+outputs:
+  save_predictions: true
+  save_figures: true
+  save_model: true
+  checkpoint_best: true
+  update_leaderboard: true
+  figures:
+    - training_loss_curve
+    - predicted_vs_observed_timeseries
+    - predicted_vs_observed_scatter
+    - error_by_hydro_phase
+
+notes:
+  - "LSTM es el punto de entrada a modelos secuenciales antes del TFT"
+  - "Normalizar features con StandardScaler ajustado solo en train"
+  - "Encoder de 60 días captura un ciclo húmedo completo"
+  - "Comparar contra XGBoost; si no supera, justificar complejidad adicional"

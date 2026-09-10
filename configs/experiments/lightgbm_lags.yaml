@@ -1,0 +1,61 @@
+experiment:
+  name: lightgbm_pisco_lags_calendar_fourier
+  description: "LightGBM con features de lags PISCO, calendario e índices de Fourier"
+  objective: "Alternativa eficiente a XGBoost con LightGBM leaf-wise growth"
+  dataset_version: D4_pisco_model_ready_precip
+  model: M7_lightgbm
+  all_targets: [pr_next_1d, pr_sum_next_3d, pr_sum_next_7d]
+  primary_target: pr_sum_next_7d
+  feature_set: pisco_lags_calendar_fourier
+  split_strategy: temporal_holdout
+  train_ratio: 0.70
+  val_ratio: 0.15
+  test_ratio: 0.15
+  n_trials: 8
+  search_type: random
+  seeds: [42]
+
+feature_groups:
+  precipitation_lags: [pr_lag_1, pr_lag_2, pr_lag_3, pr_lag_5, pr_lag_7, pr_lag_10, pr_lag_14, pr_lag_21, pr_lag_30]
+  rolling_sums: [pr_sum_1d, pr_sum_3d, pr_sum_5d, pr_sum_7d, pr_sum_10d, pr_sum_15d, pr_sum_30d]
+  api: [api_7d, api_15d, api_30d]
+  fourier: [sin_doy_1, cos_doy_1, sin_doy_2, cos_doy_2]
+  calendar: [day_of_year, month, hydro_month, hydro_phase]
+  climatology: [clim_pr_p50_doy, clim_pr_p90_doy, clim_pr_mean_doy]
+
+hyperparameter_search:
+  n_trials: 8
+  search_type: random
+  params_grid:
+    n_estimators: [200, 400, 600, 800]
+    max_depth: [3, 4, 5, 6, -1]
+    learning_rate: [0.01, 0.03, 0.05, 0.1]
+    num_leaves: [15, 31, 63, 127]
+    subsample: [0.7, 0.8, 0.9, 1.0]
+    colsample_bytree: [0.7, 0.8, 0.9, 1.0]
+    min_child_samples: [10, 20, 30, 50]
+    reg_alpha: [0, 0.1, 0.5]
+    reg_lambda: [1, 2, 5]
+    random_state: [42]
+    verbosity: [-1]
+  early_stopping_rounds: 50
+  eval_metric: rmse
+
+outputs:
+  save_predictions: true
+  save_figures: true
+  save_model: true
+  update_leaderboard: true
+  figures:
+    - predicted_vs_observed_scatter
+    - predicted_vs_observed_timeseries
+    - feature_importance_bar
+    - residuals_vs_time
+    - monthly_bias_boxplot
+    - error_by_hydro_phase
+
+notes:
+  - "LightGBM suele ser más rápido que XGBoost en datasets medianos"
+  - "num_leaves controla la complejidad del árbol; prefiere valores menores para cuencas pequeñas"
+  - "verbosity=-1 suprime mensajes de progreso por defecto"
+  - "Comparar directamente con M6_xgboost en mismas condiciones"

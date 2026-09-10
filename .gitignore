@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+
+# Logs y checkpoints
+*.log
+logs/
+lightning_logs/
+*.ckpt
+*.pt
+models/*.ckpt
+
+# Datos crudos pesados (van a Drive, ver FUENTES.md)
+data/raw/
+data/bronze/
+
+# Sistema
+.DS_Store
+Thumbs.db

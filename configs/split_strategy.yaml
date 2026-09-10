@@ -1,0 +1,33 @@
+# Estrategia de partición temporal de datos
+
+default:
+  method: temporal_holdout
+  train_ratio: 0.70
+  val_ratio: 0.15
+  test_ratio: 0.15
+  gap_days: 0  # Días de separación entre splits para evitar leakage por ventanas
+
+  notes:
+    - "Split siempre por orden cronológico. Nunca aleatorio."
+    - "train: período más antiguo"
+    - "val: período intermedio"
+    - "test: período más reciente"
+    - "Scalers y bias correction: ajustar SOLO con train"
+    - "Climatología por doy: calcular SOLO con train"
+    - "Percentiles de alerta: calcular SOLO con train"
+
+alternative_expanding_window:
+  method: expanding_window
+  initial_train_years: 5
+  step_days: 365
+  description: "Walk-forward validation para series largas"
+  use_when: "Dataset > 10 años"
+
+leakage_prevention:
+  rules:
+    - "pr_pisco de mañana NO entra como input futuro"
+    - "era5 real de mañana NO entra como input futuro"
+    - "tmax/tmin real de mañana NO entra como input futuro"
+    - "Solo entran al futuro: calendario, Fourier, climatología histórica, horizonte"
+    - "Pronósticos GFS/meteorológicos: solo si realmente disponibles antes del pronóstico"
+  validation_test: tests/test_no_leakage.py

@@ -1,0 +1,2 @@
+[console_scripts]
+hidroalerta = src.cli:main

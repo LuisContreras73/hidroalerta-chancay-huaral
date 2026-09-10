@@ -1,0 +1,81 @@
+# Fuentes de datos del proyecto HidroAlerta Chancay-Huaral
+# Prioridad: observados > grillados/satelitales
+
+priority_tier_1_observed:
+  senamhi_stations:
+    description: "Estaciones meteorológicas e hidrológicas SENAMHI"
+    variables: [pr_mm, tmax_c, tmin_c, hr_pct, ws_ms, solar_rad_mj]
+    frequency: daily
+    format: [csv, xlsx]
+    status: pending
+    contact: "SENAMHI Oficina Regional Lima"
+
+  ana_snirh:
+    description: "Caudales y niveles ANA/SNIRH cuenca Chancay-Huaral"
+    variables: [q_m3s, stage_m]
+    frequency: daily
+    format: [csv, xlsx]
+    status: pending
+    key_stations:
+      - id: "QCH001"
+        name: "Santo Domingo"
+        lat: -11.35
+        lon: -76.9
+        elevation_m: 980
+
+  crhc:
+    description: "Comité de Recursos Hídricos de Cuenca Chancay-Huaral"
+    variables: [q_m3s, lagoon_storage_hm3, lagoon_release_m3s]
+    frequency: daily
+    format: [csv]
+    status: pending
+
+priority_tier_2_gridded:
+  pisco:
+    description: "Producto grillado SENAMHI para Perú"
+    variables:
+      pr:
+        name: "Precipitación diaria PISCOp v2.1"
+        unit: "mm/day"
+        resolution_km: 5
+        crs: "EPSG:4326"
+        format: netcdf
+        status: available
+      tmax:
+        name: "Temperatura máxima PISCOt"
+        unit: "°C"
+        resolution_km: 5
+        format: netcdf
+        status: available
+      tmin:
+        name: "Temperatura mínima PISCOt"
+        unit: "°C"
+        resolution_km: 5
+        format: netcdf
+        status: available
+    use_case: "Avance preliminar y complemento/relleno"
+    limitation: "No reemplaza observaciones locales"
+
+  chirps:
+    description: "Climate Hazards Group InfraRed Precipitation with Station data"
+    variables: [pr_mm]
+    resolution_km: 5.6
+    frequency: daily
+    status: optional
+    use_case: "Complemento, comparación con PISCO"
+
+  era5_land:
+    description: "ERA5-Land Reanalysis ECMWF"
+    variables: [pr_mm, tmax_c, tmin_c, soil_moisture, evaporation, runoff]
+    resolution_km: 9
+    frequency: hourly
+    status: optional
+    use_case: "Covariables auxiliares, PET"
+
+  gpm_imerg:
+    description: "GPM IMERG Late Run"
+    variables: [pr_mm]
+    resolution_km: 10
+    frequency: "30min, daily"
+    status: optional
+    use_case: "Escenarios de precipitación"

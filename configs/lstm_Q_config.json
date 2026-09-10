@@ -1,0 +1,14 @@
+{
+  "encoder_len": 90,
+  "hidden": 64,
+  "layers": 2,
+  "dropout": 0.3,
+  "lr": 0.0007,
+  "batch": 64,
+  "n_params": 72001,
+  "epochs_trained": 52,
+  "total_time_s": 29.2,
+  "best_val_loss": 0.0769,
+  "target": "q_next_1d",
+  "n_features": 77
+}
